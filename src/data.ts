@@ -2,11 +2,11 @@ import { Project, MarqueeCard, GalleryItem } from './types';
 
 // Let's grab the actual generated image URLs to ensure precise rendering of the visual identity
 export const IMAGES = {
-  hero: '/src/assets/images/bleu_hero_1779430067423.png',
-  about: '/src/assets/images/bleu_about_1779430092477.png',
-  works: '/src/assets/images/bleu_works_1779430110272.png',
-  gallery: '/src/assets/images/bleu_gallery_1779430125929.png',
-  contact: '/src/assets/images/bleu_contact_1779430140625.png'
+  hero: '/images/bleu_hero_1779430067423.png',
+  about: '/images/bleu_about_1779430092477.png',
+  works: '/images/bleu_works_1779430110272.png',
+  gallery: '/images/bleu_gallery_1779430125929.png',
+  contact: '/images/bleu_contact_1779430140625.png'
 };
 
 export const PROJECTS_DATA: Project[] = [
