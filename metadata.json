@@ -1,0 +1,6 @@
+{
+  "name": "BLEU Manga Portfolio",
+  "description": "A top-tier cinematic portfolio website inspired by 90s manga editorials, Japanese streetwear magazines, and retro sports campaigns.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
