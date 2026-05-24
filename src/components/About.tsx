@@ -9,7 +9,11 @@ export function About() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
+  const isTouchDevice = typeof window !== 'undefined' && 
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
   function handleMouseMove({ clientX, clientY, currentTarget }: React.MouseEvent) {
+    if (isTouchDevice) return;
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);

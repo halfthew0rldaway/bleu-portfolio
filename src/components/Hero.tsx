@@ -10,22 +10,26 @@ const skills = [
 ];
 
 export function Hero() {
+  const isTouchDevice = typeof window !== 'undefined' && 
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   const xSpring = useSpring(mouseX, { stiffness: 40, damping: 25 });
   const ySpring = useSpring(mouseY, { stiffness: 40, damping: 25 });
 
-  const xTransform = useTransform(xSpring, [-0.5, 0.5], ['-1.5%', '1.5%']);
-  const yTransform = useTransform(ySpring, [-0.5, 0.5], ['-1.5%', '1.5%']);
+  const xTransform = useTransform(xSpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['-1.5%', '1.5%']);
+  const yTransform = useTransform(ySpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['-1.5%', '1.5%']);
   
-  const textXTransform = useTransform(xSpring, [-0.5, 0.5], ['3%', '-3%']);
-  const textYTransform = useTransform(ySpring, [-0.5, 0.5], ['3%', '-3%']);
+  const textXTransform = useTransform(xSpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['3%', '-3%']);
+  const textYTransform = useTransform(ySpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['3%', '-3%']);
 
-  const subTextXTransform = useTransform(xSpring, [-0.5, 0.5], ['1.5%', '-1.5%']);
-  const subTextYTransform = useTransform(ySpring, [-0.5, 0.5], ['1.5%', '-1.5%']);
+  const subTextXTransform = useTransform(xSpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['1.5%', '-1.5%']);
+  const subTextYTransform = useTransform(ySpring, [-0.5, 0.5], isTouchDevice ? ['0%', '0%'] : ['1.5%', '-1.5%']);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (isTouchDevice) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -47,13 +51,14 @@ export function Hero() {
           initial={{ filter: 'blur(20px)', opacity: 0 }}
           animate={{ filter: 'blur(0px)', opacity: 0.7 }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          style={{ x: xTransform, y: yTransform }}
+          style={isTouchDevice ? undefined : { x: xTransform, y: yTransform }}
           className="w-full h-full object-cover object-center mix-blend-plus-lighter will-change-transform"
           draggable="false"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-[#050505]/60 to-[#050505]" />
-        {/* Subtle blur overlay on the bottom portion */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#050505] to-transparent backdrop-blur-[2px]" />
+        {/* Use simple gradient on mobile instead of expensive backdrop-blur */}
+        <div className={`absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#050505] to-transparent ${isTouchDevice ? '' : 'backdrop-blur-[2px]'}`} />
       </div>
 
       {/* Intro Text */}

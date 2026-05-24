@@ -38,22 +38,27 @@ const projects = [
   }
 ];
 
+const isTouchDevice = typeof window !== 'undefined' && 
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 const ProjectCard: React.FC<{ project: typeof projects[0], index: number, total: number }> = ({ project, index, total }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   
   // Responsive top offset so cards stack cohesively
   const topOffset = `calc(10vh + ${index * 40}px)`;
 
+  // Scroll-linked 3D only on desktop
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
   
   // 0 at center, 1 at edges
   const distanceFomCenter = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0, 1]);
-  const scrollZ = useTransform(distanceFomCenter, [0, 1], [0, -200]);
-  const scrollRotateX = useTransform(scrollYProgress, [0, 0.5, 1], ["5deg", "0deg", "-5deg"]);
+  const scrollZ = useTransform(distanceFomCenter, [0, 1], isTouchDevice ? [0, 0] : [0, -200]);
+  const scrollRotateX = useTransform(scrollYProgress, [0, 0.5, 1], isTouchDevice ? ["0deg", "0deg", "0deg"] : ["5deg", "0deg", "-5deg"]);
 
+  // Mouse-tracking springs — only allocate on desktop
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -66,7 +71,7 @@ const ProjectCard: React.FC<{ project: typeof projects[0], index: number, total:
   const translateY = useTransform(mouseYSpring, [-0.5, 0.5], [-15, 15]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (isTouchDevice || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -82,7 +87,7 @@ const ProjectCard: React.FC<{ project: typeof projects[0], index: number, total:
   };
 
   const handleMouseEnter = () => {
-    playHoverSound();
+    if (!isTouchDevice) playHoverSound();
   };
 
   return (

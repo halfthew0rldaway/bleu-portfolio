@@ -16,6 +16,9 @@ export function Physics({ children }: PhysicsProps) {
     if (!containerRef.current) return;
     const container = containerRef.current;
 
+    const isMobile = window.innerWidth < 768 || 
+      ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+
     const Engine = Matter.Engine,
       Runner = Matter.Runner,
       MouseConstraint = Matter.MouseConstraint,
@@ -28,6 +31,8 @@ export function Physics({ children }: PhysicsProps) {
       engineRef.current = Engine.create({
         gravity: { x: 0, y: 1.5 },
         enableSleeping: true,
+        // Reduce solver iterations on mobile for less CPU usage
+        ...(isMobile && { positionIterations: 4, velocityIterations: 3 }),
       });
     }
     const engine = engineRef.current;
@@ -35,7 +40,8 @@ export function Physics({ children }: PhysicsProps) {
     World.clear(world, false); // Clear world for re-initialization
 
     if (!runnerRef.current) {
-      runnerRef.current = Runner.create();
+      // Lower delta on mobile = fewer physics steps per second
+      runnerRef.current = Runner.create(isMobile ? { delta: 1000 / 30 } : {});
     }
     const runner = runnerRef.current;
 
@@ -72,7 +78,7 @@ export function Physics({ children }: PhysicsProps) {
       const body = Bodies.rectangle(x, y, elW, elH, {
         restitution: 0.3,
         friction: 0.8,
-        frictionAir: 0.04,
+        frictionAir: isMobile ? 0.08 : 0.04, // Higher on mobile = settle faster = sleep sooner
         render: { visible: false },
       });
 
@@ -128,7 +134,7 @@ export function Physics({ children }: PhysicsProps) {
       if (allowSound) playGrabSound();
     });
 
-    Matter.Events.on(engine, 'collisionStart', (event) => {
+    Matter.Events.on(engine, 'collisionStart', (event: any) => {
       if (!allowSound) return;
       let maxRelativeVel = 0;
       
@@ -151,10 +157,18 @@ export function Physics({ children }: PhysicsProps) {
     // Sync DOM to Physics bodies
     let isVisible = false;
     let visibilitySet = false;
+    let frameCount = 0;
 
     const update = () => {
       // Only do heavy physics/DOM updates if visible
       if (!isVisible && visibilitySet) {
+        renderFrameRef.current = requestAnimationFrame(update);
+        return;
+      }
+
+      // On mobile, only sync DOM every other frame (30fps) to reduce paint cost
+      frameCount++;
+      if (isMobile && frameCount % 2 !== 0 && visibilitySet) {
         renderFrameRef.current = requestAnimationFrame(update);
         return;
       }
