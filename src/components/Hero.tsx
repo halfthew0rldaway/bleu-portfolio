@@ -9,9 +9,18 @@ const skills = [
   'MySQL', 'Linux', 'UI/UX', 'Figma'
 ];
 
+// On mobile, show fewer skills — 12 tags on a small screen is cramped and heavy
+const mobileSkills = [
+  'React', 'TypeScript', 'Node.js', 'TailwindCSS',
+  'Framer Motion', 'Matter.js', 'UI/UX', 'PHP'
+];
+
 export function Hero() {
   const isTouchDevice = typeof window !== 'undefined' && 
     ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const activeSkills = isMobile ? mobileSkills : skills;
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -67,7 +76,7 @@ export function Hero() {
         className="relative z-0 flex flex-col items-center justify-center text-center px-[clamp(1.5rem,5vw,3rem)] mt-20 md:mt-24 pointer-events-none will-change-transform"
       >
         <h1 className="text-[clamp(4rem,10vw,10rem)] font-bold tracking-tighter text-white mb-6 leading-[0.9]">
-          <SplitText text="Hi, I’m Bleu" delay={0.2} />
+          <SplitText text="Hi, I'm Bleu" delay={0.2} />
         </h1>
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
@@ -83,10 +92,14 @@ export function Hero() {
       {/* Physics Container for Skills */}
       <div className="absolute inset-0 z-10">
         <Physics>
-          {skills.map((skill, index) => (
+          {activeSkills.map((skill, index) => (
             <div 
               key={index} 
-              className="cursor-interactive px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1vw,1.125rem)] rounded-sm bg-black/40 backdrop-blur-md border border-white/10 text-white/90 text-[clamp(0.875rem,1.25vw,1.125rem)] font-medium whitespace-nowrap shadow-xl hover:bg-white/10 hover:border-white/30 transition-colors select-none"
+              className={`cursor-interactive px-[clamp(1.5rem,2vw,2rem)] py-[clamp(0.75rem,1vw,1.125rem)] rounded-sm border border-white/10 text-white/90 text-[clamp(0.875rem,1.25vw,1.125rem)] font-medium whitespace-nowrap shadow-xl hover:bg-white/10 hover:border-white/30 transition-colors select-none ${
+                isTouchDevice 
+                  ? 'bg-[#0a0a0a]/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]' 
+                  : 'bg-black/40 backdrop-blur-md'
+              }`}
             >
               {skill}
             </div>

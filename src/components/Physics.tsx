@@ -29,7 +29,8 @@ export function Physics({ children }: PhysicsProps) {
     // Create engine and runner if they don't exist
     if (!engineRef.current) {
       engineRef.current = Engine.create({
-        gravity: { x: 0, y: 1.5 },
+        // Lower gravity on mobile for gentler cascading drops (less violent collisions)
+        gravity: { x: 0, y: isMobile ? 0.8 : 1.5 },
         enableSleeping: true,
         // Reduce solver iterations on mobile for less CPU usage
         ...(isMobile && { positionIterations: 4, velocityIterations: 3 }),
@@ -62,10 +63,6 @@ export function Physics({ children }: PhysicsProps) {
     const childNodes = Array.from(container.children) as HTMLElement[];
     const bodies: Matter.Body[] = [];
 
-    // Ensure elements are rendered to measure them, then hide them instantly
-    // We give them a small tick to measure if needed, but since they rendered
-    // before Matter initialized, we can measure right away.
-
     childNodes.forEach((child, i) => {
       const elRect = child.getBoundingClientRect();
       const elW = elRect.width || 100;
@@ -73,18 +70,30 @@ export function Physics({ children }: PhysicsProps) {
 
       // Start position (randomized near top center)
       const x = width / 2 + (Math.random() - 0.5) * (width * 0.4);
-      const y = -100 - (i * 60);
+      // On mobile: stagger bodies much further apart vertically for a cascading waterfall effect
+      // This prevents all bodies from hitting the ground simultaneously (collision storm)
+      const ySpacing = isMobile ? 120 : 60;
+      const y = -100 - (i * ySpacing);
 
       const body = Bodies.rectangle(x, y, elW, elH, {
-        restitution: 0.3,
+        restitution: isMobile ? 0.2 : 0.3, // Less bounce on mobile = fewer secondary collisions
         friction: 0.8,
-        frictionAir: isMobile ? 0.08 : 0.04, // Higher on mobile = settle faster = sleep sooner
+        frictionAir: isMobile ? 0.1 : 0.04, // Higher on mobile = settle faster = sleep sooner
         render: { visible: false },
       });
 
       bodies.push(body);
       World.add(world, body);
     });
+
+    // On mobile, ramp gravity back up after initial cascade settles
+    // This gives a gentle entry but normal interaction weight afterward
+    let gravityRampTimeout: ReturnType<typeof setTimeout> | null = null;
+    if (isMobile) {
+      gravityRampTimeout = setTimeout(() => {
+        engine.gravity.y = 1.2;
+      }, 2500);
+    }
 
     // Add mouse interaction
     const mouse = Mouse.create(container);
@@ -110,7 +119,6 @@ export function Physics({ children }: PhysicsProps) {
     container.addEventListener('touchstart', m.mousedown, { passive: true });
     container.addEventListener('touchmove', (e) => {
       if (mouseConstraint.body) {
-        // e.preventDefault(); // allow default to scroll, unless interacting with a body?
         m.mousemove(e);
       }
     }, { passive: false });
@@ -124,18 +132,27 @@ export function Physics({ children }: PhysicsProps) {
     // Run engine
     Runner.run(runner, engine);
 
-    // Audio setup
+    // Audio setup — delay sound activation longer on mobile to skip the initial cascade noise
     let allowSound = false;
+    const soundDelay = isMobile ? 3000 : 1500;
     const soundTimeout = setTimeout(() => {
       allowSound = true;
-    }, 1500);
+    }, soundDelay);
 
     Matter.Events.on(mouseConstraint, 'startdrag', () => {
       if (allowSound) playGrabSound();
     });
 
+    // Throttle collision sounds on mobile to prevent audio processing storms
+    let lastCollisionSoundTime = 0;
+    const collisionSoundThrottle = isMobile ? 150 : 50; // ms between collision sounds
+
     Matter.Events.on(engine, 'collisionStart', (event: any) => {
       if (!allowSound) return;
+      
+      const now = performance.now();
+      if (now - lastCollisionSoundTime < collisionSoundThrottle) return;
+
       let maxRelativeVel = 0;
       
       for (let i = 0; i < event.pairs.length; i++) {
@@ -150,6 +167,7 @@ export function Physics({ children }: PhysicsProps) {
       }
 
       if (maxRelativeVel > 1.5) {
+        lastCollisionSoundTime = now;
         playCollisionSound(maxRelativeVel);
       }
     });
@@ -224,6 +242,7 @@ export function Physics({ children }: PhysicsProps) {
 
     return () => {
       clearTimeout(soundTimeout);
+      if (gravityRampTimeout) clearTimeout(gravityRampTimeout);
       Matter.Events.off(mouseConstraint, 'startdrag', undefined as any);
       Matter.Events.off(engine, 'collisionStart', undefined as any);
       cancelAnimationFrame(renderFrameRef.current);
@@ -248,6 +267,7 @@ export function Physics({ children }: PhysicsProps) {
             top: 0,
             left: 0,
             visibility: 'hidden',
+            willChange: 'transform', // Promote to GPU layer for smoother compositing
             touchAction: 'none' // Better touch handling when dragging
           }}
           className="inline-block cursor-interactive"
@@ -258,3 +278,4 @@ export function Physics({ children }: PhysicsProps) {
     </div>
   );
 }
+
