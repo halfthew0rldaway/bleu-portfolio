@@ -10,25 +10,25 @@ const projects = [
     name: 'Docsmith',
     description: 'Browser-first PDF utility — merge, split, rotate & compress.',
     stack: ['Next.js', 'TypeScript', 'Tailwind', 'pdf-lib'],
-    url: 'https://github.com/halfthew0rldaway/docsmith'
+    url: 'https://docsmith-six.vercel.app'
   },
   {
     name: 'Zendo',
     description: 'Zen-inspired project management with Kanban & team pipelines.',
     stack: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase'],
-    url: 'https://github.com/halfthew0rldaway/zendo'
+    url: 'https://zendo-gules.vercel.app'
   },
   {
     name: 'Animix',
     description: 'Anime & manga streaming platform with cinematic UI.',
     stack: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL'],
-    url: 'https://github.com/halfthew0rldaway/animix'
+    url: 'https://animix-omega.vercel.app'
   },
   {
     name: 'FluxState',
     description: 'Real-time PC power & thermal simulation engine.',
     stack: ['Astro', 'JavaScript', 'CSS'],
-    url: 'https://github.com/halfthew0rldaway/FluxState'
+    url: 'https://flux-state.vercel.app'
   },
   {
     name: 'Gear-In',
