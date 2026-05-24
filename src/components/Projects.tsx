@@ -8,32 +8,32 @@ import { Divider } from './Divider';
 const projects = [
   {
     name: 'Docsmith',
-    description: 'AI-powered documentation platform.',
-    stack: ['React', 'TypeScript', 'Node.js', 'AI'],
+    description: 'Browser-first PDF utility — merge, split, rotate & compress.',
+    stack: ['Next.js', 'TypeScript', 'Tailwind', 'pdf-lib'],
     url: 'https://github.com/halfthew0rldaway/docsmith'
   },
   {
     name: 'Zendo',
-    description: 'Modern productivity workspace.',
-    stack: ['React', 'TailwindCSS', 'Redux'],
+    description: 'Zen-inspired project management with Kanban & team pipelines.',
+    stack: ['Next.js', 'TypeScript', 'Tailwind', 'Supabase'],
     url: 'https://github.com/halfthew0rldaway/zendo'
   },
   {
     name: 'Animix',
-    description: 'Anime streaming & discovery platform.',
-    stack: ['React', 'API', 'UI/UX'],
+    description: 'Anime & manga streaming platform with cinematic UI.',
+    stack: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL'],
     url: 'https://github.com/halfthew0rldaway/animix'
   },
   {
     name: 'FluxState',
-    description: 'State management experimentation project.',
-    stack: ['TypeScript', 'Architecture'],
+    description: 'Real-time PC power & thermal simulation engine.',
+    stack: ['Astro', 'JavaScript', 'CSS'],
     url: 'https://github.com/halfthew0rldaway/FluxState'
   },
   {
     name: 'Gear-In',
-    description: 'Tech & product inventory platform.',
-    stack: ['React', 'Node.js', 'PostgreSQL'],
+    description: 'Full-featured e-commerce platform with advanced checkout.',
+    stack: ['Laravel', 'PHP', 'Blade', 'MySQL'],
     url: 'https://github.com/halfthew0rldaway/gear-in'
   }
 ];
