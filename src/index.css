@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-border-ink: #141414;
+  --color-comic-yellow: #ffde03;
+  --color-taskbar-blue: #245edb;
+  --color-start-green: #3c9d3c;
+  --color-desktop-bg: #5a8de2;
+  --color-window-bg: #f1f1f1;
+}
+
+body {
+  font-family: Tahoma, 'Trebuchet MS', 'Segoe UI', Arial, sans-serif;
+}

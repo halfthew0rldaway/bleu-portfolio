@@ -1,0 +1,76 @@
+export const projects = {
+  productivity: [
+    {
+      id: "docsmith",
+      name: "DocSmith",
+      category: "Document Tool",
+      description: "Generate and manipulate documents through a web interface.",
+      status: "Active",
+      link: "https://docsmith-six.vercel.app/",
+      repo: "https://github.com/halfthew0rldaway/docsmith",
+    },
+    {
+      id: "utilify",
+      name: "Utilify",
+      category: "Utilities",
+      description: "Collection of practical utilities for everyday tasks.",
+      status: "Active",
+      link: "https://halfthew0rldaway.github.io/utilify/",
+      repo: "https://github.com/halfthew0rldaway/utilify",
+    },
+    {
+      id: "pomodoro",
+      name: "Pomodoro",
+      category: "Productivity",
+      description:
+        "Focused productivity timer designed to stay out of the way.",
+      status: "Active",
+      link: "https://halfthew0rldaway.github.io/pomodoro/",
+      repo: "https://github.com/halfthew0rldaway/pomodoro",
+    },
+    {
+      id: "kalkulator-kalori",
+      name: "Kalkulator Kalori",
+      category: "Health",
+      description: "Simple nutrition calculator.",
+      status: "Active",
+      link: "https://halfthew0rldaway.github.io/kalkulatorkalori/",
+      repo: "https://github.com/halfthew0rldaway/kalkulatorkalori",
+    },
+  ],
+  media: [
+    {
+      id: "cinea",
+      name: "Cinea",
+      category: "Media",
+      description: "Movie discovery and streaming interface.",
+      status: "Active",
+      tech: "Next.js, React, Tailwind CSS",
+      link: "https://cinea-rho.vercel.app/",
+      repo: "https://github.com/halfthew0rldaway/cinea",
+      isHero: true,
+    },
+    {
+      id: "animix",
+      name: "Animix",
+      category: "Media",
+      description: "Anime-focused discovery experience.",
+      status: "Active",
+      tech: "React, Tailwind CSS",
+      link: "https://animix-omega.vercel.app/",
+      repo: "https://github.com/halfthew0rldaway/animix",
+    },
+  ],
+  experimental: [
+    {
+      id: "flux-state",
+      name: "Flux State",
+      category: "State Management",
+      description:
+        "Experiments involving state management, interaction, and interface exploration.",
+      status: "Active",
+      link: "https://flux-state.vercel.app/",
+      repo: "https://github.com/halfthew0rldaway/flux-state",
+    },
+  ],
+};
