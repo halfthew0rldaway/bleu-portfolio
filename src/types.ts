@@ -5,7 +5,8 @@ export type AppContentId =
   | "lab"
   | "contact"
   | "github"
-  | "terminal";
+  | "terminal"
+  | "browser";
 
 export interface WindowState {
   id: string;
@@ -17,4 +18,5 @@ export interface WindowState {
   position: { x: number; y: number };
   size: { width: number; height: number };
   zIndex: number;
+  url?: string;
 }

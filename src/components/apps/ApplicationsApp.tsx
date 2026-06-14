@@ -2,6 +2,7 @@ import React from "react";
 import { projects } from "../../data/projects";
 import { Folder, ArrowUpRight } from "lucide-react";
 import { ImageRenderer } from "../DesktopEnvironment";
+import { useDesktopStore } from "../../store/desktopStore";
 
 export const ApplicationsApp = () => {
   return (
@@ -55,14 +56,25 @@ const CategorySection = ({ title, items }: { title: string; items: any[] }) => {
 };
 
 const AppGridItem: React.FC<{ item: any }> = ({ item }) => {
+  const openWindow = useDesktopStore((state) => state.openWindow);
   const iconSrc = getAppIconSrc(item.id);
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.preventDefault();
+    openWindow(
+      `browser-${item.id}`,
+      item.name,
+      "browser",
+      { width: 900, height: 600 },
+      item.link
+    );
+  };
+
   return (
     <div className="flex flex-col items-center group cursor-default focus:outline-none p-1 relative w-20 justify-start">
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noreferrer"
-        className="flex flex-col items-center w-full focus:outline-none"
+      <button
+        onClick={handleOpen}
+        className="flex flex-col items-center w-full focus:outline-none bg-transparent border-none"
       >
         <div
           className={`w-12 h-12 flex items-center justify-center drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] mb-1`}
@@ -78,7 +90,7 @@ const AppGridItem: React.FC<{ item: any }> = ({ item }) => {
             {item.name}
           </span>
         </div>
-      </a>
+      </button>
       {item.repo && item.repo !== "#" && (
         <a
           href={item.repo}

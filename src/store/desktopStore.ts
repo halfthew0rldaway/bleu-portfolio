@@ -14,6 +14,7 @@ interface DesktopState {
     title: string,
     contentId: AppContentId,
     defaultSize?: { width: number; height: number },
+    url?: string
   ) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
@@ -42,6 +43,7 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
     title,
     contentId,
     defaultSize = { width: 600, height: 450 },
+    url
   ) => {
     const { windows, highestZIndex } = get();
 
@@ -78,6 +80,7 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
       position,
       size: defaultSize,
       zIndex: highestZIndex + 1,
+      url,
     };
 
     set((state) => ({

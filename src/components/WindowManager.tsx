@@ -9,11 +9,12 @@ import { LabApp } from "./apps/LabApp";
 import { ContactApp } from "./apps/ContactApp";
 import { GithubApp } from "./apps/GithubApp";
 import { TerminalApp } from "./apps/TerminalApp";
+import { BrowserApp } from "./apps/BrowserApp";
 
 export const WindowManager = () => {
   const windows = useDesktopStore((state) => state.windows);
 
-  const renderContent = (contentId: string) => {
+  const renderContent = (contentId: string, win: any) => {
     switch (contentId) {
       case "readme":
         return <ReadmeApp />;
@@ -29,6 +30,8 @@ export const WindowManager = () => {
         return <GithubApp />;
       case "terminal":
         return <TerminalApp />;
+      case "browser":
+        return <BrowserApp url={win.url} />;
       default:
         return <div className="p-4 text-slate-800">Application not found.</div>;
     }
@@ -41,7 +44,7 @@ export const WindowManager = () => {
           (win) =>
             !win.isMinimized && (
               <Window key={win.id} windowData={win}>
-                {renderContent(win.contentId)}
+                {renderContent(win.contentId, win)}
               </Window>
             ),
         )}
