@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { WindowState } from "../types";
 import { useDesktopStore } from "../store/desktopStore";
@@ -17,13 +17,43 @@ export const Window: React.FC<WindowProps> = ({ windowData, children }) => {
   const toggleMinimize = useDesktopStore((state) => state.toggleMinimize);
   const focusWindow = useDesktopStore((state) => state.focusWindow);
   const updateWindowPos = useDesktopStore((state) => state.updateWindowPos);
+  const updateWindowSize = useDesktopStore((state) => state.updateWindowSize);
   const activeWindowId = useDesktopStore((state) => state.activeWindowId);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const isActive = activeWindowId === id;
 
   const handlePointerDown = () => {
     focusWindow(id);
+  };
+
+  const handleResizeStart = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    focusWindow(id);
+    setIsResizing(true);
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = size.width;
+    const startHeight = size.height;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const newWidth = Math.max(300, startWidth + (moveEvent.clientX - startX));
+      const newHeight = Math.max(200, startHeight + (moveEvent.clientY - startY));
+      updateWindowSize(id, { width: newWidth, height: newHeight });
+    };
+
+    const onPointerUp = () => {
+      setIsResizing(false);
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
+    };
+
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
   };
 
   return (
@@ -42,7 +72,9 @@ export const Window: React.FC<WindowProps> = ({ windowData, children }) => {
         height: isMaximized ? "calc(100vh - 36px)" : size.height, // 36px taskbar height in XP
       }}
       exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+      onDragStart={() => setIsDragging(true)}
       onDragEnd={(e, info) => {
+        setIsDragging(false);
         if (!isMaximized) {
           updateWindowPos(id, {
             x: position.x + info.offset.x,
@@ -130,12 +162,21 @@ export const Window: React.FC<WindowProps> = ({ windowData, children }) => {
 
       {/* Content Area */}
       <div className="flex-1 overflow-hidden bg-[#ECE9D8] relative border-t-0 p-0 m-0">
+        {(isResizing || isDragging || !isActive) && (
+          <div className="absolute inset-0 z-50 bg-transparent" />
+        )}
         {children}
       </div>
 
-      {/* Resize Handle (Invisible, handled roughly since motion drag is doing the core dragging) */}
+      {/* Resize Handle */}
       {!isMaximized && (
-        <div className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50 mix-blend-difference" />
+        <div 
+          className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-50"
+          onPointerDown={handleResizeStart}
+          style={{
+            backgroundImage: "linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.15) 50%, transparent 50%, transparent 70%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.15) 80%, transparent 80%)"
+          }}
+        />
       )}
     </motion.div>
   );
